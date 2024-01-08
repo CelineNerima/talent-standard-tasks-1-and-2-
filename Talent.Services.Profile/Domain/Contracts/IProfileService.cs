@@ -12,6 +12,29 @@ namespace Talent.Services.Profile.Domain.Contracts
     public interface IProfileService
     {
         bool AddNewLanguage(AddLanguageViewModel language);
+        Task<bool> UpdateLanguage(AddLanguageViewModel language);
+        Task<bool> DeleteLanguage(AddLanguageViewModel language);
+        Task<IEnumerable<AddLanguageViewModel>> GetLanguages(string updaterId);
+
+        bool AddNewSkill(AddSkillViewModel skill);
+        Task<bool> UpdateSkill(AddSkillViewModel skill);
+        Task<bool> DeleteSkill(AddSkillViewModel skill);
+        Task<IEnumerable<AddSkillViewModel>> GetSkills(string updaterId);
+
+        bool AddNewExperience(ExperienceViewModel experience);
+        Task<bool> UpdateExperience(ExperienceViewModel experience);
+        Task<bool> DeleteExperience(ExperienceViewModel experience);
+        Task<IEnumerable<ExperienceViewModel>> GetExperience(string updaterId);
+
+        bool AddNewCertification(AddCertificationViewModel certificate);
+        Task<bool> UpdateCertification(AddCertificationViewModel certificate);
+        Task<bool> DeleteCertification(AddCertificationViewModel certificate);
+        Task<IEnumerable<AddCertificationViewModel>> GetCertification(string updaterId);
+
+        bool AddNewEducation(AddEducationViewModel education);
+        Task<bool> UpdateEducation(AddEducationViewModel education);
+        Task<bool> DeleteEducation(AddEducationViewModel education);
+        Task<IEnumerable<AddEducationViewModel>> GetEducation(string updaterId);
 
         Task<TalentProfileViewModel> GetTalentProfile(String Id);
         Task<IEnumerable<string>> GetTalentSuggestionIds(string employerOrJobId, bool forJob, int position, int increment);

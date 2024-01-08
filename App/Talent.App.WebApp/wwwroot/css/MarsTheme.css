@@ -251,7 +251,6 @@
     padding-bottom: 10px !important;
     margin-left: 25px;
 }
-
 /* User profile form - END */
 /*Form style*/
 .form-footer {
@@ -1461,3 +1460,23 @@ div.ReactTags__selected a.ReactTags__remove {
     margin-bottom: 10px;
 }
 /*Manage jobs - End*/
+
+/*Dropdown label Talent Profile -Start*/
+.custom-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.custom-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 5px; /* Adjust as needed */
+}
+
+.custom-dropdown {
+    width: 100%; /* or specify your desired width */
+}
+
+/*Dropdown label Talent Profile -End*/
