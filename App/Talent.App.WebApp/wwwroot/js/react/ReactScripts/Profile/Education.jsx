@@ -24,6 +24,8 @@ export default class Education extends React.Component {
             editingEducationId: null
         }
 
+        this.openUpdate = this.openUpdate.bind(this)
+        this.openDelete = this.openDelete.bind(this)
         this.openEdit = this.openEdit.bind(this)
         this.closeEdit = this.closeEdit.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -35,11 +37,41 @@ export default class Education extends React.Component {
         this.renderDisplay = this.renderDisplay.bind(this)
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.education !== prevState.educationData) {
+            return {
+                educationData: nextProps.education
+            };
+        }
+
+        return null;
+    }
+
     openEdit(event) {
         event.preventDefault();
         const education = Object.assign([], this.props.education)
         this.setState({
             showEditSection: true,
+            showUpdateSection: false,
+            educationData: education,
+            editingEducationId: null
+        });
+    }
+
+    openUpdate() {
+        const education = Object.assign([], this.props.education)
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: true,
+            educationData: education,
+            editingEducationId: null
+        });
+    }
+
+    openDelete() {
+        const education = Object.assign([], this.props.education)
+        this.setState({
+            showEditSection: false,
             showUpdateSection: false,
             educationData: education,
             editingEducationId: null
@@ -61,6 +93,7 @@ export default class Education extends React.Component {
     }
 
     editEducation(educationId) {
+        this.openUpdate();
         const { educationData } = this.state;
         const educationToEdit = educationData.find(education => education.id === educationId);
 
@@ -84,6 +117,7 @@ export default class Education extends React.Component {
     }
 
     deleteEducation(educationId) {
+        this.openDelete();
         const { educationData } = this.state;
 
         const updatedEducation = educationData.filter(education => education.id !== educationId);
@@ -107,10 +141,8 @@ export default class Education extends React.Component {
                 return education;
             });
 
-            // Notify the parent component (AccountProfile) 
             this.props.saveProfileData({ education: updatedEducation });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: true,
@@ -128,10 +160,8 @@ export default class Education extends React.Component {
             // If adding 
             const updatedEducation = [...educationData, Object.assign({}, newEducation)];
 
-            // Notify the parent component (AccountProfile) 
             this.props.saveProfileData({ education: updatedEducation });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: false,
@@ -379,7 +409,7 @@ export default class Education extends React.Component {
                                         <td>{item.degree}</td>
                                         <td>{item.yearOfGraduation}</td>
                                         <td className="right aligned">
-                                            <span className="button" onClick={() => this.editEducation(item.id)}>
+                                            <span style={{ marginRight: "8px" }} className="button" onClick={() => this.editEducation(item.id)}>
                                                 <i className="outline write icon"></i>
                                             </span>
                                             &nbsp;&nbsp;

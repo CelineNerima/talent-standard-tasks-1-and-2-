@@ -16,18 +16,30 @@ export default class Skill extends React.Component {
                 name: "",
                 level: ""
             },
-            editingSkillId:null
+            editingSkillId: null
         }
 
+        this.openUpdate = this.openUpdate.bind(this);
+        this.openDelete = this.openDelete.bind(this);
         this.openEdit = this.openEdit.bind(this)
         this.closeEdit = this.closeEdit.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.editSkill = this.editSkill.bind(this)
         this.deleteSkill = this.deleteSkill.bind(this)
-        this.saveSkill = this.saveSkill.bind(this)        
+        this.saveSkill = this.saveSkill.bind(this)
         this.renderUpdate = this.renderUpdate.bind(this)
         this.renderEdit = this.renderEdit.bind(this)
         this.renderDisplay = this.renderDisplay.bind(this)
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.skills !== prevState.skillData) {
+            return {
+                skillData: nextProps.skills
+            };
+        }
+
+        return null;
     }
 
     openEdit(event) {
@@ -36,8 +48,28 @@ export default class Skill extends React.Component {
         this.setState({
             showEditSection: true,
             showUpdateSection: false,
-            skillData:skills,
-            editingSkillId: null  // Clear editingSkillId when adding a new skill
+            skillData: skills,
+            editingSkillId: null
+        });
+    }
+
+    openUpdate() {
+        const skills = Object.assign([], this.props.skills);
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: true,
+            skillData: skills,
+            editingSkillId: null
+        });
+    }
+
+    openDelete() {
+        const skills = Object.assign([], this.props.skills);
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: false,
+            skillData: skills,
+            editingSkillId: null
         });
     }
 
@@ -54,8 +86,9 @@ export default class Skill extends React.Component {
             newSkill: Object.assign({}, prevState.newSkill, { [name]: value })
         }));
     }
-       
+
     editSkill(skillId) {
+        this.openUpdate();
         const { skillData } = this.state;
         const skillToEdit = skillData.find(skill => skill.id === skillId);
 
@@ -75,6 +108,7 @@ export default class Skill extends React.Component {
     }
 
     deleteSkill(skillId) {
+        this.openDelete();
         const { skillData } = this.state;
 
         const updatedSkills = skillData.filter(skill => skill.id !== skillId);
@@ -85,7 +119,7 @@ export default class Skill extends React.Component {
             skillData: updatedSkills,
         });
     }
-       
+
     saveSkill() {
         const { skillData, newSkill, editingSkillId } = this.state;
 
@@ -102,14 +136,12 @@ export default class Skill extends React.Component {
                 return skill;
             });
 
-            // Notify the parent component (AccountProfile) about the updated skills
             this.props.saveProfileData({ skills: updatedSkills });
 
-            // Update the local state
             this.setState({
                 skillData: updatedSkills,
                 showEditSection: false,
-                showUpdateSection: false, // Close update section after save
+                showUpdateSection: false,
                 newSkill: Object.assign({}, { name: "", level: "" }),
                 editingSkillId: null
             });
@@ -117,10 +149,8 @@ export default class Skill extends React.Component {
             // If adding a new skill
             const updatedSkills = [...skillData, Object.assign({}, newSkill)];
 
-            // Notify the parent component (AccountProfile) about the updated skills
             this.props.saveProfileData({ skills: updatedSkills });
 
-            // Update the local state
             this.setState({
                 skillData: updatedSkills,
                 showEditSection: false,
@@ -248,15 +278,14 @@ export default class Skill extends React.Component {
                                         <td>{skill.name}</td>
                                         <td>{skill.level}</td>
                                         <td className="right aligned">
-                                            <span className="button" onClick={() => this.editSkill(skill.id)}>
+                                            <span style={{ marginRight: "8px" }} className="button" onClick={() => this.editSkill(skill.id)}>
                                                 <i className="outline write icon"></i>
                                             </span>
-                                            &nbsp;&nbsp;
                                             <span className="button" onClick={() => this.deleteSkill(skill.id)}>
                                                 <i className="remove icon"></i>
                                             </span>
-                                        </td>                                       
-                                    </tr>                                    
+                                        </td>
+                                    </tr>
                                 )}
                             </tbody>
                         </table>

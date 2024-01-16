@@ -1,5 +1,6 @@
 ﻿/* Social media JSX */
 import React from 'react';
+import Cookies from 'js-cookie';
 import { ChildSingleInput } from '../Form/SingleInput.jsx';
 import { FaGithub, FaLinkedinIn } from "react-icons/fa6";
 import { Popup } from 'semantic-ui-react';
@@ -19,7 +20,7 @@ export default class SocialMediaLinkedAccount extends React.Component {
             showEditSection: false,
             links: linkedAccounts
         }
-        
+
         this.openEdit = this.openEdit.bind(this)
         this.closeEdit = this.closeEdit.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -33,7 +34,7 @@ export default class SocialMediaLinkedAccount extends React.Component {
         $('.ui.button.social-media')
             .popup();
     }
-    
+
     openEdit() {
         const linkedAccounts = Object.assign({}, this.props.linkedAccounts)
         this.setState({
@@ -59,23 +60,20 @@ export default class SocialMediaLinkedAccount extends React.Component {
     saveLinkedAccounts() {
         const data = Object.assign({}, this.state.links);
         // console.log('Before save:', this.state.links);
-        // Call saveProfileData with the updated data
         this.props.saveProfileData({ linkedAccounts: data });
-        // Update state with saved data
         this.setState({
             showEditSection: false,
             links: data,
         });
         // console.log('After save:', this.state.links);
     }
-    
+
     //Get link and Go to webpage
     handleButtonClick(link) {
         window.open(link, '_blank');
     }
 
-    renderEdit() {        
-        //Press button get link, update state respectively
+    renderEdit() {
         return (
             <div className='ui sixteen wide column'>
                 <ChildSingleInput
@@ -98,7 +96,7 @@ export default class SocialMediaLinkedAccount extends React.Component {
                     placeholder="Enter your GitHub Url"
                     errorMessage="Please enter a valid link"
                 />
-                
+
                 <button type="button" className="ui teal button" onClick={this.saveLinkedAccounts}>Save</button>
                 <button type="button" className="ui button" onClick={this.closeEdit}>Cancel</button>
             </div>
@@ -106,7 +104,6 @@ export default class SocialMediaLinkedAccount extends React.Component {
     }
 
     renderDisplay() {
-        //Read view
         let linkedIn = this.props.linkedAccounts ? this.props.linkedAccounts.linkedIn : ""
         let github = this.props.linkedAccounts ? this.props.linkedAccounts.github : ""
 
@@ -114,10 +111,11 @@ export default class SocialMediaLinkedAccount extends React.Component {
             <div className='row'>
                 <div className="ui sixteen wide column">
                     <React.Fragment>
-                        <button type="button" className="ui blue button social-media" onClick={() => this.handleButtonClick(linkedIn)}><FaLinkedinIn /> LinkedIn </button>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                        {/*TO FIX Margin*/}
-                        <button type="button" className="ui teal button social-media" onClick={() => this.handleButtonClick(github)}><FaGithub /> Github </button>
+                        <button type="button" className="ui blue button social-media"
+                            style={{ marginRight: "24px" }}
+                            onClick={() => this.handleButtonClick(linkedIn)}><FaLinkedinIn /> LinkedIn </button>
+                        <button type="button" className="ui teal button social-media"
+                            onClick={() => this.handleButtonClick(github)}><FaGithub /> Github </button>
                     </React.Fragment>
                     <button type="button" className="ui right floated teal button" onClick={this.openEdit}>Edit</button>
                 </div>
@@ -127,7 +125,6 @@ export default class SocialMediaLinkedAccount extends React.Component {
 
     render() {
         return (
-            //Toggle between edit and read view            
             this.state.showEditSection ? this.renderEdit() : this.renderDisplay()
         )
     }

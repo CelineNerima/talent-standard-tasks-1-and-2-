@@ -20,6 +20,8 @@ export default class Language extends React.Component {
             editingLanguageId: null
         };
 
+        this.openUpdate = this.openUpdate.bind(this);
+        this.openDelete = this.openDelete.bind(this);
         this.openEdit = this.openEdit.bind(this);
         this.closeEdit = this.closeEdit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -31,11 +33,41 @@ export default class Language extends React.Component {
         this.renderDisplay = this.renderDisplay.bind(this);
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.languages !== prevState.languageData) {
+            return {
+                languageData: nextProps.languages
+            };
+        }
+
+        return null;
+    }
+
     openEdit(event) {
         event.preventDefault();
         const languages = Object.assign([], this.props.languages);
         this.setState({
             showEditSection: true,
+            showUpdateSection: false,
+            languageData: languages,
+            editingLanguageId: null
+        });
+    }
+
+    openUpdate() { 
+        const languages = Object.assign([], this.props.languages);
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: true,
+            languageData: languages,
+            editingLanguageId:null
+        });
+    }
+
+    openDelete() {
+        const languages = Object.assign([], this.props.languages);
+        this.setState({
+            showEditSection: false,
             showUpdateSection: false,
             languageData: languages,
             editingLanguageId: null
@@ -57,6 +89,7 @@ export default class Language extends React.Component {
     }
 
     editLanguage(languageId) {
+        this.openUpdate();
         const { languageData } = this.state;
         const languageToEdit = languageData.find(language => language.id === languageId);
 
@@ -76,6 +109,7 @@ export default class Language extends React.Component {
     }
 
     deleteLanguage(languageId) {
+        this.openDelete();
         this.setState(prevState => {
             const updatedLanguages = prevState.languageData.filter(language => language.id !== languageId);
             this.props.saveProfileData({ languages: updatedLanguages });
@@ -99,14 +133,12 @@ export default class Language extends React.Component {
                 return language;
             });
 
-            // Notify the parent component (AccountProfile) about the updated languages
             this.props.saveProfileData({ languages: updatedLanguages });
 
-            // Update the local state
             this.setState({
                 languageData: updatedLanguages,
                 showEditSection: false,
-                showUpdateSection: false, // Close update section after save
+                showUpdateSection: false,
                 newLanguage: Object.assign({}, { name: "", level: "" }),
                 editingLanguageId: null
             });
@@ -114,10 +146,8 @@ export default class Language extends React.Component {
             // If adding a new language
             const updatedLanguages = [...languageData, Object.assign({}, newLanguage)];
 
-            // Notify the parent component (AccountProfile) about the updated languages
             this.props.saveProfileData({ languages: updatedLanguages });
 
-            // Update the local state
             this.setState({
                 languageData: updatedLanguages,
                 showEditSection: false,
@@ -159,8 +189,8 @@ export default class Language extends React.Component {
                         </select>
                     </div>
                     <div className="six wide field" style={{ marginBottom: "5px", marginTop: "5px" }}>
-                        <button className="ui basic blue prompt button" onClick={this.saveLanguage}>Update</button>
-                        <button className="ui basic red prompt button" onClick={this.closeEdit}>Cancel</button>
+                        <button className="ui basic blue button" onClick={this.saveLanguage}>Update</button>
+                        <button className="ui basic red button" onClick={this.closeEdit}>Cancel</button>
                     </div>
                 </div>
             </div>
@@ -231,13 +261,17 @@ export default class Language extends React.Component {
                                         <td>{language.name}</td>
                                         <td>{language.level}</td>
                                         <td className="right aligned">
-                                            <span className="button" onClick={() => this.editLanguage(language.id)}>
-                                                <i className="outline write icon"></i>
-                                            </span>
-                                            &nbsp;&nbsp;
-                                            <span className="button" onClick={() => this.deleteLanguage(language.id)}>
-                                                <i className="remove icon"></i>
-                                            </span>
+                                            <i
+                                                style={{ marginRight: "8px" }}
+                                                type="button"
+                                                className="ui outline write icon"
+                                                onClick={() => this.editLanguage(language.id)}
+                                            ></i>
+                                            <i
+                                                type="button"
+                                                className="ui remove icon "
+                                                onClick={() => this.deleteLanguage(language.id)}
+                                            ></i>         
                                         </td>
                                     </tr>
                                 )}

@@ -24,7 +24,7 @@ export class Description extends React.Component {
     render() {
         const characterLimit = 600;
         let characters = this.props.description ? this.props.description.length : 0;
-        
+
         return (
             <React.Fragment>
                 <div className="four wide column">

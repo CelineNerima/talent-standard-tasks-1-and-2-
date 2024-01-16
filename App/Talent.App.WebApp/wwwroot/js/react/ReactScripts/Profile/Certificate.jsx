@@ -7,7 +7,7 @@ export default class Certificate extends React.Component {
 
     constructor(props) {
         super(props)
-        
+
         const certifications = props.certifications ? JSON.parse(JSON.stringify(props.certifications)) : [];
 
         this.state = {
@@ -17,11 +17,13 @@ export default class Certificate extends React.Component {
             newCertificate: {
                 certificationName: "",
                 certificationFrom: "",
-                certificationYear: 0  
+                certificationYear: 0
             },
             editingCertificateId: null
         }
 
+        this.openUpdate = this.openUpdate.bind(this)
+        this.openDelete = this.openDelete.bind(this)
         this.openEdit = this.openEdit.bind(this)
         this.closeEdit = this.closeEdit.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -33,6 +35,16 @@ export default class Certificate extends React.Component {
         this.renderDisplay = this.renderDisplay.bind(this)
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.certifications !== prevState.certificateData) {
+            return {
+                certificateData: nextProps.certifications
+            };
+        }
+
+        return null;
+    }
+
     openEdit(event) {
         event.preventDefault();
         const certifications = Object.assign([], this.props.certifications)
@@ -41,6 +53,26 @@ export default class Certificate extends React.Component {
             showUpdateSection: false,
             certificateData: certifications,
             editingCertificateId: null
+        });
+    }
+
+    openUpdate() {
+        const certifications = Object.assign([], this.props.certifications);
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: true,
+            certificateData: certifications,
+            editingCertificationId: null
+        });
+    }
+
+    openDelete() {
+        const skills = Object.assign([], this.props.certifications);
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: false,
+            certificateData: certifications,
+            editingCertificationId: null
         });
     }
 
@@ -57,8 +89,9 @@ export default class Certificate extends React.Component {
             newCertificate: Object.assign({}, prevState.newCertificate, { [name]: value })
         }));
     }
-                
+
     editCertificate(certificateId) {
+        this.openUpdate();
         const { certificateData } = this.state;
         const certificateToEdit = certificateData.find(certificate => certificate.id === certificateId);
 
@@ -80,6 +113,7 @@ export default class Certificate extends React.Component {
     }
 
     deleteCertificate(certificateId) {
+        this.openDelete();
         const { certificateData } = this.state;
 
         const updatedCertificate = certificateData.filter(certificate => certificate.id !== certificateId);
@@ -103,10 +137,8 @@ export default class Certificate extends React.Component {
                 return certificate;
             });
 
-            // Notify the parent component (AccountProfile) 
             this.props.saveProfileData({ certifications: updatedCertificate });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: true,
@@ -122,10 +154,8 @@ export default class Certificate extends React.Component {
             // If adding 
             const updatedCertificate = [...certificateData, Object.assign({}, newCertificate)];
 
-            // Notify the parent component (AccountProfile) 
             this.props.saveProfileData({ certifications: updatedCertificate });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: false,
@@ -138,7 +168,7 @@ export default class Certificate extends React.Component {
                 editingCertificateId: null
             });
         }
-    }   
+    }
 
     renderEdit() {
         const { newCertificate } = this.state;
@@ -289,10 +319,9 @@ export default class Certificate extends React.Component {
                                         <td>{certificate.certificationFrom}</td>
                                         <td>{certificate.certificationYear}</td>
                                         <td className="right aligned">
-                                            <span className="button" onClick={() => this.editCertificate(certificate.id)}>
+                                            <span style={{ marginRight: "8px" }} className="button" onClick={() => this.editCertificate(certificate.id)}>
                                                 <i className="outline write icon"></i>
                                             </span>
-                                            &nbsp;&nbsp;
                                             <span className="button" onClick={() => this.deleteCertificate(certificate.id)}>
                                                 <i className="remove icon"></i>
                                             </span>

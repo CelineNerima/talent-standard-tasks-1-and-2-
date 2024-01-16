@@ -17,7 +17,7 @@ export default class VideoUpload extends React.Component {
     render() {
         return (
             <div>
-                <h1>VideoUpload goes here</h1>
+                <h1>VideoUpload currently unavailable</h1>
             </div>
         )
     }

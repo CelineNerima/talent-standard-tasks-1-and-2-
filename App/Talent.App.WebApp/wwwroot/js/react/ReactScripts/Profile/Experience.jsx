@@ -8,8 +8,9 @@ export default class Experience extends React.Component {
     constructor(props) {
         super(props);
 
+        // Convert to a JSON string and then parse it back into a new experience object
         const experience = props.experience ? JSON.parse(JSON.stringify(props.experience)) : [];
-        
+
         this.state = {
             showEditSection: false,
             showUpdateSection: false,
@@ -24,6 +25,8 @@ export default class Experience extends React.Component {
             editingExperienceId: null
         }
 
+        this.openUpdate = this.openUpdate.bind(this)
+        this.openDelete = this.openDelete.bind(this)
         this.openEdit = this.openEdit.bind(this)
         this.closeEdit = this.closeEdit.bind(this)
         this.handleTextChange = this.handleTextChange.bind(this)
@@ -37,11 +40,41 @@ export default class Experience extends React.Component {
         this.renderDisplay = this.renderDisplay.bind(this)
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.experience !== prevState.experienceData) {
+            return {
+                experienceData: nextProps.experience
+            };
+        }
+
+        return null;
+    }
+
     openEdit(event) {
         event.preventDefault();
         const experience = Object.assign([], this.props.experience)
         this.setState({
             showEditSection: true,
+            showUpdateSection: false,
+            experienceData: experience,
+            editingExperienceId: null
+        });
+    }
+
+    openUpdate() {
+        const experience = Object.assign([], this.props.experience)
+        this.setState({
+            showEditSection: false,
+            showUpdateSection: true,
+            experienceData: experience,
+            editingExperienceId: null
+        });
+    }
+
+    openDelete() {
+        const experience = Object.assign([], this.props.experience)
+        this.setState({
+            showEditSection: false,
             showUpdateSection: false,
             experienceData: experience,
             editingExperienceId: null
@@ -98,6 +131,7 @@ export default class Experience extends React.Component {
     };
 
     editExperience(experienceId) {
+        this.openUpdate();
         const { experienceData } = this.state;
         const experienceToEdit = experienceData.find(experience => experience.id === experienceId);
 
@@ -120,6 +154,7 @@ export default class Experience extends React.Component {
     }
 
     deleteExperience(experienceId) {
+        this.openDelete();
         const { experienceData } = this.state;
 
         const updatedExperience = experienceData.filter(experience => experience.id !== experienceId);
@@ -143,10 +178,8 @@ export default class Experience extends React.Component {
                 return experience;
             });
 
-            // Notify the parent component (AccountProfile) 
             this.props.saveProfileData({ experience: updatedExperience });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: false,
@@ -154,8 +187,8 @@ export default class Experience extends React.Component {
                     company: "",
                     responsibilities: "",
                     position: "",
-                    start: new Date(), // Set default values as needed
-                    end: new Date(),   // Set default values as needed
+                    start: new Date(),
+                    end: new Date(),
                 },
                 editingExperienceId: null
             });
@@ -163,10 +196,8 @@ export default class Experience extends React.Component {
             // If adding 
             const updatedExperience = [...experienceData, Object.assign({}, newExperience)];
 
-            // Notify the parent component (AccountProfile) about the updated skills
             this.props.saveProfileData({ experience: updatedExperience });
 
-            // Update the local state
             this.setState({
                 showEditSection: false,
                 showUpdateSection: false,
@@ -174,8 +205,8 @@ export default class Experience extends React.Component {
                     company: "",
                     responsibilities: "",
                     position: "",
-                    start: new Date(), // Set default values as needed
-                    end: new Date(),   // Set default values as needed
+                    start: new Date(),
+                    end: new Date(),
                 },
                 editingExperienceId: null
             });
@@ -184,6 +215,20 @@ export default class Experience extends React.Component {
 
     renderEdit() {
         const { newExperience } = this.state;
+
+        // Inside the renderEdit and renderUpdate functions
+        console.log("Start Date:", newExperience.start);
+        console.log("End Date:", newExperience.end);
+
+        // Check if dates are valid, if not, set default values
+        if (isNaN(newExperience.start.getTime())) {
+            newExperience.start = new Date();
+        }
+
+        if (isNaN(newExperience.end.getTime())) {
+            newExperience.end = new Date();
+        }
+
 
         return (
             <div className="form-wrappper">
@@ -254,6 +299,18 @@ export default class Experience extends React.Component {
     renderUpdate() {
         const { newExperience } = this.state;
 
+        // Inside the renderEdit and renderUpdate functions
+        console.log("Start Date:", newExperience.start);
+        console.log("End Date:", newExperience.end);
+        // Check if dates are valid, if not, set default values
+        if (!(newExperience.start instanceof Date) || isNaN(newExperience.start.getTime())) {
+            newExperience.start = new Date();
+        }
+
+        if (!(newExperience.end instanceof Date) || isNaN(newExperience.end.getTime())) {
+            newExperience.end = new Date();
+        }
+        
         return (
             <div className="form-wrappper">
                 <div className="fields">
@@ -348,7 +405,7 @@ export default class Experience extends React.Component {
                                         <td>{this.formatDate(new Date(experience.start))}</td>
                                         <td>{this.formatDate(new Date(experience.end))}</td>
                                         <td className="right aligned">
-                                            <span className="button" onClick={() => this.editExperience(experience.id)}>
+                                            <span style={{ marginRight: "8px" }} className="button" onClick={() => this.editExperience(experience.id)}>
                                                 <i className="outline write icon"></i>
                                             </span>
                                             &nbsp;&nbsp;

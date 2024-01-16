@@ -1,4 +1,5 @@
-﻿import React from 'react'
+﻿import React from 'react';
+import Cookies from 'js-cookie';
 import { SingleInput } from '../Form/SingleInput.jsx';
 import DatePicker from 'react-datepicker';
 
