@@ -1,9 +1,9 @@
-﻿import React from 'react';
-import ReactDOM from 'react-dom';
-import ReactPlayer from 'react-player';
+﻿// TalentCardDetail.jsx
+import React from 'react';
+import { Card, Icon, Grid, Item } from 'semantic-ui-react';
 
 export default class TalentCardDetail extends React.Component {
     render() {
-        
+
     }
 }

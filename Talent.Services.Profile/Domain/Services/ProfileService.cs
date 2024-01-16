@@ -538,7 +538,7 @@ namespace Talent.Services.Profile.Domain.Services
                     var existingEducation = await _userEducationRepository.GetByIdAsync(education.Id);
 
                     if (existingEducation != null)
-                    {                        
+                    {
                         // Save changes
                         await _userEducationRepository.Update(existingEducation);
 
@@ -591,7 +591,7 @@ namespace Talent.Services.Profile.Domain.Services
                 var certifications = profile.Certifications.Select(x => ViewModelFromCertification(x)).ToList();
                 var experience = profile.Experience.Select(x => ViewModelFromExperience(x)).ToList();
                 var education = profile.Education.Select(x => ViewModelFromEducation(x)).ToList();
-               
+
                 var result = new TalentProfileViewModel
                 {
                     Id = profile.Id,
@@ -943,8 +943,60 @@ namespace Talent.Services.Profile.Domain.Services
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(string employerOrJobId, bool forJob, int position, int increment)
         {
-            //Your code here;
-            throw new NotImplementedException();
+            try
+            {
+                var profile = await _employerRepository.GetByIdAsync(employerOrJobId);
+                IEnumerable<User> users = (await _userRepository.Get(x => !x.IsDeleted)).Skip(position * increment).Take(increment);
+
+                if (profile != null)
+                {
+                    List<TalentSnapshotViewModel> result = new List<TalentSnapshotViewModel>();
+
+                    foreach (var user in users)
+                    {
+                        String name = String.Format("{0} {1}", user.FirstName, user.LastName);
+                        List<string> skills = user.Skills.Select(x => x.Skill).ToList();
+
+                        UserExperience latest = user.Experience.OrderByDescending(x => x.End).FirstOrDefault();
+                        String level, employment;
+                        if (latest != null)
+                        {
+                            level = latest.Position;
+                            employment = latest.Company;
+                        }
+                        else
+                        {
+                            level = "Unknown";
+                            employment = "Unknown";
+                        }
+
+                        var talentSnapshot = new TalentSnapshotViewModel
+                        {
+                            CurrentEmployment = employment,
+                            Id = user.Id,
+                            Level = level,
+                            Name = name,
+                            PhotoId = user.ProfilePhotoUrl,
+                            Skills = skills,
+                            Summary = user.Summary,
+                            Visa = user.VisaStatus,
+                            LinkedIn = user.LinkedAccounts.LinkedIn,
+                            Github = user.LinkedAccounts.Github,
+                        };
+
+                        result.Add(talentSnapshot);
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                Console.WriteLine($"Error in GetTalentSnapshotList: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(IEnumerable<string> ids)
@@ -1082,7 +1134,7 @@ namespace Talent.Services.Profile.Domain.Services
             };
         }
 
-        protected AddEducationViewModel ViewModelFromEducation(UserEducation education) 
+        protected AddEducationViewModel ViewModelFromEducation(UserEducation education)
         {
             return new AddEducationViewModel
             {
@@ -1092,9 +1144,8 @@ namespace Talent.Services.Profile.Domain.Services
                 Title = education.Title,
                 Degree = education.Degree,
                 YearOfGraduation = education.YearOfGraduation,
-            };        
+            };
         }
-
         #endregion
 
         #endregion
